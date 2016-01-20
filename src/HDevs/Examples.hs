@@ -1,23 +1,21 @@
 module HDevs.Examples
 ( gainExperiment
-, gainExperiment')
+, gains2Experiment)
 where
 
-
 import HDevs.Atomic
+import Control.Arrow
 import Control.Monad.State.Lazy
 
 
-gainModel :: Double -> Atomic Double Double
-gainModel multiplier = staticSystem (multiplier*)
+--gainModel :: Double -> Model Double Double
+--gainModel multiplier = arr (multiplier*)
 
-gainExperiment :: IO ()
-gainExperiment = evalStateT simulation (0.0,tN)
-    where simulation = simulate (gainModel 4) 10.0 [(1.0,1.0),(2.0,2.0),(6.0,3.0)]
-          tN = ta $ gainModel 4
+gainExperiment :: [Message Double]
+gainExperiment = runSimulator 10.0 sim [(1.0,1.0),(2.0,2.0),(6.0,3.0)]
+    where sim = arr (4*) --simulator (gainModel 4)
 
-gainExperiment' :: [Message Double]
-gainExperiment' = evalState sim s
-    where tN = ta $ gainModel 4
-          s = (gainModel 4, 0.0, tN)
-          sim = simulator 10.0 [(1.0,1.0),(2.0,2.0),(6.0,3.0)]
+gains2Experiment = runSimulator 10.0 (sim4 >>> sim5) [(1.0,1.0)] --,(2.0,2.0),(6.0,3.0)]
+    where
+        sim4 = arr (4*) --simulator (gainModel 4)
+        sim5 = arr (5*) --simulator (gainModel 5)
