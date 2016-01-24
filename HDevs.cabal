@@ -47,21 +47,16 @@ cabal-version:       >=1.10
 
 
 library
-  -- Modules exported by the library.
   exposed-modules:     HDevs
-  
-  -- Modules included in this library but not exported.
-  -- other-modules:       
-  
-  -- LANGUAGE extensions used by modules in this package.
-  -- other-extensions:    
-  
-  -- Other library packages from which modules are imported.
   build-depends:       base, arrows, mtl 
-  
-  -- Directories containing source files.
   hs-source-dirs:      src
-  
-  -- Base language which the package is written in.
+  ghc-options:         -Wall -fhpc
   default-language:    Haskell2010
   
+test-suite Test-HDevs
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    tests, src
+  main-is:           Main.hs
+  build-depends:     base, tasty, tasty-quickcheck, arrows, mtl
+  ghc-options:       -Wall -fhpc
+  default-language:  Haskell2010

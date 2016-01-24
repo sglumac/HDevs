@@ -1,7 +1,5 @@
 module HDevs
-    ( module HDevs.Atomic
-    , module HDevs.Examples )
+    ( module HDevs.Atomic )
     where
 
 import HDevs.Atomic
-import HDevs.Examples
