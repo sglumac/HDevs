@@ -55,7 +55,7 @@ library
   
 test-suite Test-HDevs
   type:              exitcode-stdio-1.0
-  hs-source-dirs:    tests, src
+  hs-source-dirs:    test, src
   main-is:           Main.hs
   build-depends:     base, tasty, tasty-quickcheck, arrows, mtl
   ghc-options:       -Wall -fhpc

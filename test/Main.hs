@@ -3,14 +3,13 @@ module Main where
 import Test.Tasty
 import Test.Tasty.QuickCheck (testProperty)
 
-import HDevs.Atomic
-import Control.Arrow
+import HDevs
 import qualified Control.Category
 
 import Data.Function (on)
 import Data.List (sortBy)
 
-import ArrowLaws (arrowLawsGroup)
+import Test.ArrowLaws (arrowLawsGroup)
 
 simpleGainTest :: Double -> Double -> Bool
 simpleGainTest k x = ys == [(k*x,t)]
