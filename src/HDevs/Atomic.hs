@@ -1,6 +1,7 @@
 module HDevs.Atomic
 ( Model (..)
 , static
+, accumulator
 , compose
 ) where
 
@@ -68,9 +69,23 @@ static f =  wait where
     transition _ x = hold 0 wait transition (f x)
 
 
+accumulator ::
+    (input -> state -> state) -> (state -> output) ->
+    state -> Model input output
+
+accumulator f g s0 = wait where
+
+    wait = passive transition
+
+    next x = accumulator f g (f x s0)
+
+    transition _ x = hold 0 (next x) transition (g s0)
+
+
 passive :: (ElapsedTime -> input -> Model input output) -> Model input output
 
-passive transition = Atomic undefined transition forever Nothing 
+passive transition =
+    Atomic (error "Passive state has no internal transitions!") transition forever Nothing 
 
 
 hold ::

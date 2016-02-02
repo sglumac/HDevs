@@ -1,24 +1,17 @@
 module Main where
 
 import Test.Tasty
-import Test.Tasty.QuickCheck (testProperty)
 
-import HDevs
-import qualified Control.Category
-
-import Data.Function (on)
-import Data.List (sortBy)
-
-import Test.Gains (gains)
+import Test.Simulator (simulatorTests)
 import Test.ArrowLaws (arrowLaws)
-import Test.Atomic (atomic)
+import Test.Atomic (atomicTests)
 
 
 suite :: TestTree
 suite = testGroup "Tests HDevs"
-    [ gains
+    [ simulatorTests
     , arrowLaws
-    , atomic ]
+    , atomicTests ]
 
 main :: IO ()
 main = defaultMain suite

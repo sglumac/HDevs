@@ -1,44 +1,54 @@
 module Test.Utility
-( gainSimulator
-, outputsEqual
-, sameOutputs
-, sortMsgs )
+( messagesApproxEqual
+, assertMessagesApproxEqual
+, sortMsgs
+, maxTime
+, approxEqual )
 where
 
 import HDevs
+import HDevs.Data
 
 import Data.Function (on)
 import Data.List (sortBy)
 
+import Test.Tasty.HUnit
 
-gainSimulator :: Double -> Simulator Double Double
-gainSimulator k = arr (k*)
+messagesApproxEqual :: (Num signal, Ord signal, Fractional signal) =>
+    [Message signal] -> [Message signal] -> Bool
 
-
-outputsEqual :: Eq output =>
-    [Message input] -> Simulator input output -> [Message output] -> Bool
-
-outputsEqual [] sim outMsgs = runSimulator 1.0 sim [] == outMsgs
-
-outputsEqual inMsgs sim outMsgs = runSimulator tMax sim inMsgs == outMsgs
+messagesApproxEqual xs ys
+    = length xs == length ys && allApproxEqual
     where
-        tMax = maximum . map snd $ inMsgs
+        msgApproxEqual (x,tx) (y,ty) = approxEqual 1e-6 x y && approxEqual 1e-6 tx ty
+        allApproxEqual = all id $ zipWith msgApproxEqual xs ys
 
 
-sameOutputs :: Eq output =>
-    [Message input] -> Simulator input output -> Simulator input output -> Bool
+assertMessagesApproxEqual :: (Num signal, Ord signal, Fractional signal) =>
+    [Message signal] -> [Message signal] -> Assertion
 
-sameOutputs [] sim1 sim2 = outMsgs1 == outMsgs2
-    where
-        outMsgs1 = runSimulator 1.0 sim1 []
-        outMsgs2 = runSimulator 1.0 sim2 []
-
-sameOutputs inMsgs sim1 sim2 = outMsgs1 == outMsgs2
-    where
-        outMsgs1 = runSimulator tMax sim1 inMsgs
-        outMsgs2 = runSimulator tMax sim2 inMsgs
-        tMax = maximum . map snd $ inMsgs
+assertMessagesApproxEqual xs ys =
+    assertBool "Message streams are not even approximately equal!" (messagesApproxEqual xs ys)
 
 
 sortMsgs :: [Message input] -> [Message input]
 sortMsgs = sortBy (compare `on` snd)
+
+
+approxEqual :: (Num a, Ord a) =>
+    a -> a -> a -> Bool
+
+approxEqual eps x1 x2 = abs (x1 - x2) < eps
+
+
+assertApproxEqual :: (Num a, Ord a, Show a) =>
+    a -> a -> a -> Assertion
+
+assertApproxEqual eps x1 x2 = assertBool msg (approxEqual eps x1 x2) where
+    msg = "Element " ++ show x1 ++ " is not approximatelly equal to " ++ show x2
+
+
+maxTime :: [Message signal] -> Time
+maxTime [] = 0.0
+maxTime xs = maximum $ map snd xs
+

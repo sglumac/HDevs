@@ -51,20 +51,20 @@ runSimulator tMax sim@(Simulator tL tN model) msgs@((x,t):msgs')
     | tN > tMax && t > tMax = []
     | tN <= tMax && tN < t =
         let
-            (yMsg,sim') = internalTransition sim
+            (yMsg,sim') = internal sim
             yMsgs = runSimulator tMax sim' msgs
         in
             case yMsg of
                 Nothing -> yMsgs
                 Just y  -> (y,tN): yMsgs
     | otherwise =
-        runSimulator tMax (externalTransition (x,t) sim) msgs'
+        runSimulator tMax (external (x,t) sim) msgs'
 
 runSimulator tMax sim@(Simulator tL tN model) []
     | tMax < tN = []
     | otherwise =
         let 
-            (yMsg,sim') = internalTransition sim
+            (yMsg,sim') = internal sim
             yMsgs = runSimulator tMax sim' []
         in
             case yMsg of
@@ -72,9 +72,9 @@ runSimulator tMax sim@(Simulator tL tN model) []
                 Just y  -> (y,tN): yMsgs
 
 
-internalTransition :: Simulator input output -> (Maybe output,Simulator input output)
+internal :: Simulator input output -> (Maybe output,Simulator input output)
 
-internalTransition (Simulator tL tN model) =
+internal (Simulator tL tN model) =
     (yMsg,Simulator tL' tN' model')
         where
             model' = deltaInt model
@@ -83,13 +83,12 @@ internalTransition (Simulator tL tN model) =
             yMsg = lambda model
 
 
-externalTransition :: Message input -> Simulator input output -> Simulator input output
-externalTransition (x,t) (Simulator tL tN model) =
+external :: Message input -> Simulator input output -> Simulator input output
+external (x,t) (Simulator tL tN model) =
     Simulator tL' tN' model'
         where
             e = tN - tL
             model' = deltaExt model e x
             tL' = t
             tN' = tL' + ta model'
-
 
