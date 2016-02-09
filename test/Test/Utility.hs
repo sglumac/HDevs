@@ -1,7 +1,7 @@
 module Test.Utility
 ( messagesApproxEqual
 , assertMessagesApproxEqual
-, sortMsgs
+, assertApproxEqual
 , maxTime
 , approxEqual )
 where
@@ -9,30 +9,23 @@ where
 import HDevs
 import HDevs.Data
 
-import Data.Function (on)
-import Data.List (sortBy)
-
 import Test.Tasty.HUnit
 
 messagesApproxEqual :: (Num signal, Ord signal, Fractional signal) =>
-    [Message signal] -> [Message signal] -> Bool
+    signal -> Time -> [Message signal] -> [Message signal] -> Bool
 
-messagesApproxEqual xs ys
+messagesApproxEqual errVal errTime xs ys
     = length xs == length ys && allApproxEqual
     where
-        msgApproxEqual (x,tx) (y,ty) = approxEqual 1e-6 x y && approxEqual 1e-6 tx ty
+        msgApproxEqual (x,tx) (y,ty) = approxEqual errVal x y && approxEqual errTime tx ty
         allApproxEqual = all id $ zipWith msgApproxEqual xs ys
 
 
 assertMessagesApproxEqual :: (Num signal, Ord signal, Fractional signal) =>
-    [Message signal] -> [Message signal] -> Assertion
+    signal -> Time -> [Message signal] -> [Message signal] -> Assertion
 
-assertMessagesApproxEqual xs ys =
-    assertBool "Message streams are not even approximately equal!" (messagesApproxEqual xs ys)
-
-
-sortMsgs :: [Message input] -> [Message input]
-sortMsgs = sortBy (compare `on` snd)
+assertMessagesApproxEqual errVal errTime xs ys =
+    assertBool "Message streams are not even approximately equal!" (messagesApproxEqual errVal errTime xs ys)
 
 
 approxEqual :: (Num a, Ord a) =>

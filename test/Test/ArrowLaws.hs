@@ -8,28 +8,28 @@ import Test.Utility
 import Test.Tasty
 import Test.Tasty.QuickCheck (testProperty)
 
-
-categoryIdentity :: [Message Double] -> Bool
-categoryIdentity msgs = messagesApproxEqual msgs' ys
+categoryIdentity :: [Double] -> Bool
+categoryIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
     where
-        msgs' = sortMsgs msgs
-        tMax = maxTime msgs'
-        ys = runSimulator tMax Control.Category.id msgs'
+        msgs = zip values [1.0..]
+        tMax = maxTime msgs
+        ys = runSimulator tMax Control.Category.id msgs
 
 
 -- arr id = id 
-arrowIdentity :: [Message Double] -> Bool
-arrowIdentity msgs = messagesApproxEqual msgs' ys
+arrowIdentity :: [Double] -> Bool
+arrowIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
     where
-        msgs' = sortMsgs msgs
-        tMax = maxTime msgs'
-        ys = runSimulator tMax (arr id) msgs'
+        msgs = zip values [1.0..]
+        tMax = maxTime msgs
+        ys = runSimulator tMax (arr id) msgs
 
 
 -- arr (h . g)  =  arr g >>> arr h
-arrowDistributiveTest :: Double -> Double -> [Message Double] -> Bool
-arrowDistributiveTest k1 k2 msgs = messagesApproxEqual xs ys
+arrowDistributiveTest :: Double -> Double -> [Double] -> Bool
+arrowDistributiveTest k1 k2 values = messagesApproxEqual 1e-6 1e-6 xs ys
     where
+        msgs = zip values [1.0..]
         h = (k1*)
         g = (k2*)
         sim = arr g >>> arr h
@@ -44,3 +44,4 @@ arrowLaws = testGroup "Arrow Laws"
     [ testProperty "Arrow identity test (arr id == id)" arrowIdentity
     , testProperty "Category identity test" categoryIdentity
     , testProperty "Arrow distributive test (arr (h . g) == arr g >>> arr h)" arrowDistributiveTest]
+

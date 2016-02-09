@@ -19,7 +19,8 @@ data Simulator input output =
 
 
 simulator :: Model input output -> Simulator input output
-simulator model =  Simulator 0 (ta model) model
+simulator model = Simulator 0 (ta model) model
+
 
 --
 --     --------     --------
@@ -45,9 +46,9 @@ instance Arrow Simulator where
     first = error "first undefined"
 
 
-runSimulator :: Time -> Simulator input output -> [Message input] -> [Message output]
+runSimulator :: Show input => Time -> Simulator input output -> [Message input] -> [Message output]
 
-runSimulator tMax sim@(Simulator tL tN model) msgs@((x,t):msgs')
+runSimulator tMax sim@(Simulator _ tN _) msgs@((x,t):msgs')
     | tN > tMax && t > tMax = []
     | tN <= tMax && tN < t =
         let
@@ -57,10 +58,18 @@ runSimulator tMax sim@(Simulator tL tN model) msgs@((x,t):msgs')
             case yMsg of
                 Nothing -> yMsgs
                 Just y  -> (y,tN): yMsgs
+    | tN <= tMax && tN == t =
+        let
+            (yMsg,sim') = confluent sim x
+            yMsgs = runSimulator tMax sim' msgs
+        in
+            case yMsg of
+                Nothing -> yMsgs
+                Just y  -> (y,tN): yMsgs
     | otherwise =
-        runSimulator tMax (external (x,t) sim) msgs'
+        runSimulator tMax (external sim (x,t)) msgs'
 
-runSimulator tMax sim@(Simulator tL tN model) []
+runSimulator tMax sim@(Simulator _ tN _) []
     | tMax < tN = []
     | otherwise =
         let 
@@ -74,7 +83,7 @@ runSimulator tMax sim@(Simulator tL tN model) []
 
 internal :: Simulator input output -> (Maybe output,Simulator input output)
 
-internal (Simulator tL tN model) =
+internal (Simulator _ tN model) =
     (yMsg,Simulator tL' tN' model')
         where
             model' = deltaInt model
@@ -83,12 +92,21 @@ internal (Simulator tL tN model) =
             yMsg = lambda model
 
 
-external :: Message input -> Simulator input output -> Simulator input output
-external (x,t) (Simulator tL tN model) =
+external :: Show input => Simulator input output -> Message input -> Simulator input output
+external (Simulator tL _ model) (x,t) =
     Simulator tL' tN' model'
         where
-            e = tN - tL
+            e = t - tL
             model' = deltaExt model e x
             tL' = t
             tN' = tL' + ta model'
 
+confluent :: Simulator input output -> input -> (Maybe output,Simulator input output)
+
+confluent (Simulator _ tN model) x =
+    (yMsg,Simulator tL' tN' model')
+        where
+            model' = deltaCon model x
+            tL' = tN
+            tN' = tL' + ta model'
+            yMsg = lambda model

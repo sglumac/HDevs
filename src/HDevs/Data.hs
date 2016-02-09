@@ -3,7 +3,7 @@ module HDevs.Data where
 type Time = Double
 
 forever :: Time
-forever = 1 / 0
+forever = read "Infinity"
 
 type Message value = (value,Time)
 
