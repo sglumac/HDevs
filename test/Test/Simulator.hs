@@ -5,7 +5,7 @@ import Test.Tasty.HUnit
 
 import Test.Utility
 
-import HDevs
+import HDevs.Simulator
 
 simpleGain :: Assertion
 simpleGain = assertMessagesApproxEqual 0.1 0.1 ys [(20.0,1.0),(24.0,2.0)]

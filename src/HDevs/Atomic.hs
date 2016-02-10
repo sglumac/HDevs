@@ -1,80 +1,38 @@
 module HDevs.Atomic
 ( Model (..)
+, Message
+, Time
+, LastEventTime
+, NextEventTime
 , static
 , accumulator
-, compose
+, passive
+, hold
+, forever
 ) where
 
-import HDevs.Data
-
+-- | Basic DEVS model 
 data Model input output
     = Atomic
         { deltaInt :: Model input output
-        , deltaExt :: ElapsedTime -> input -> Model input output
-        , deltaCon :: input -> Model input output
+        , deltaExt :: ExternalTransition input output
+        , deltaCon :: ConfluentTransition input output
         , ta       :: TransitionTime
         , lambda   :: Maybe output }
 
+type ExternalTransition input output = ElapsedTime -> input -> Model input output
+type ConfluentTransition input output = input -> Model input output
+type Time = Double
 
-compose :: 
-    Model input intermediate -> LastEventTime -> NextEventTime ->
-    Model intermediate output -> LastEventTime -> NextEventTime ->
-    Model input output
+forever :: Time
+forever = read "Infinity"
 
-compose model1 tL1 tN1 model2 tL2 tN2 = Atomic deltaInt' deltaExt' deltaCon' ta' lambda' where
+type Message value = (value,Time)
 
-    tL = max tL1 tL2
-
-    deltaInt'
-        | tN1 < tN2 =
-            let 
-                model1' = deltaInt model1
-                tL1' = tN1
-                tN1' = tN1 + ta model1'
-                model2' = case lambda model1 of
-                    Nothing -> model2
-                    Just y1 -> deltaExt model2 (tN1 - tL2) y1
-                tL2' = tN1
-                tN2' = tN1 + ta model2'
-            in
-                compose model1' tL1' tN1' model2' tL2' tN2'
-
-        | tN1 == tN2 =
-            let
-                model1' = deltaInt model1
-                tL1' = tN1
-                tN1' = tN1 + ta model1
-                model2' = case lambda model1 of
-                    Nothing -> deltaInt model2
-                    Just y1 -> deltaCon model2 y1
-                tL2' = tN1
-                tN2' = tN1 + ta model2'
-            in
-                compose model1' tL1' tN1' model2' tL2' tN2'
-
-        | otherwise =
-            let
-                model2' = deltaInt model2
-                tL2' = tN2
-                tN2' = tN2 + ta model2'
-            in
-                compose model1 tL1 tN1 model2' tL2' tN2'
-
-    deltaExt' e x = compose model1' tL1' tN1' model2 tL2 tN2
-        where
-            model1' = deltaExt model1 e1 x
-            e1 = if tL1 > tL2 then e else e + (tL2 - tL1)
-            tL1' = tL + e1
-            tN1' = tL1' + ta model1'
-
-    deltaCon' _ = error "deltaCon' undefined"
-
-    ta' = min (tN1 - tL) (tN2 - tL)
-
-    lambda'
-        | tN2 <= tN1 = lambda model2
-        | otherwise  = Nothing
-
+type ElapsedTime    = Time
+type TransitionTime = Time
+type LastEventTime  = Time
+type NextEventTime  = Time
 
 static:: (input -> output) -> Model input output
 
@@ -82,7 +40,9 @@ static f =  wait where
 
     wait = passive transition
 
-    transition _ x = hold 0 wait transition (f x)
+    transition _ x = transition' x
+
+    transition' x = hold 0 wait transition transition' (f x)
 
 
 accumulator ::
@@ -95,10 +55,12 @@ accumulator f g s0 = wait where
 
     next x = accumulator f g (f x s0)
 
-    transition _ x = hold 0 (next x) transition (g s0)
+    transition _ x = transition' x
+
+    transition' x = hold 0 (next x) transition transition' (g s0)
 
 
-passive :: (ElapsedTime -> input -> Model input output) -> Model input output
+passive :: ExternalTransition input output -> Model input output
 
 passive transition =
     Atomic noInternal transition noConfluent forever Nothing
@@ -108,9 +70,8 @@ passive transition =
 
 
 hold ::
-    Time -> Model input output -> (ElapsedTime -> input -> Model input output) ->
-    output -> Model input output
+    Time -> Model input output -> ExternalTransition input output ->
+    ConfluentTransition input output -> output -> Model input output
 
-hold t next transition out = Atomic next transition noConfluent t (Just out)
-    where
-        noConfluent = error "Confluent transition not defined!"
+hold t next transition confluent out = Atomic next transition confluent t (Just out)
+

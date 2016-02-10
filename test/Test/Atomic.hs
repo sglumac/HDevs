@@ -1,8 +1,6 @@
 module Test.Atomic where
 
 import HDevs.Atomic
-import HDevs.Data
-
 
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -32,3 +30,4 @@ atomicTests = testGroup "Atomic Tests"
     , testCase "Gain should output Nothing while waiting" noWaitOutput
     , testCase "Gain should output in send immediatelly" immediateSend
     , testCase "Gain should output correctly in send state" sendOutput]
+

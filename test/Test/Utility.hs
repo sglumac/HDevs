@@ -6,8 +6,7 @@ module Test.Utility
 , approxEqual )
 where
 
-import HDevs
-import HDevs.Data
+import HDevs.Atomic
 
 import Test.Tasty.HUnit
 
