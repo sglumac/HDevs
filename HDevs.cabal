@@ -12,11 +12,9 @@ name:                HDevs
 --                   | | | +--- code changes with no API change
 version:             0.1.0.0
 
--- A short (one-line) description of the package.
--- synopsis:            
+synopsis: Haskell implementation of Discrete Event System Specification
 
--- A longer description of the package.
--- description:         
+description: This is a experiment for arrowized implementation of DEVS.
 
 -- The license under which the package is released.
 license:             MIT
@@ -48,11 +46,17 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     HDevs
-  build-depends:       base, arrows
+  build-depends:       base >= 4.5 && < 5, arrows
   hs-source-dirs:      src
-  ghc-options:         -Wall -fhpc
+  ghc-options:         -Wall
   default-language:    Haskell2010
   
+
+source-repository head
+    type: git
+    location: https://github.com/sglumac/HDevs
+
+
 test-suite Test-HDevs
   type:              exitcode-stdio-1.0
   hs-source-dirs:    test, src
@@ -60,3 +64,4 @@ test-suite Test-HDevs
   build-depends:     base, tasty, tasty-quickcheck, tasty-hunit, arrows
   ghc-options:       -Wall
   default-language:  Haskell2010
+
