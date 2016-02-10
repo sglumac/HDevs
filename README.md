@@ -1,4 +1,4 @@
-[![Build Status](your travis url for the repo here.png)](your travis url for the repo here)
+[![Build Status](https://travis-ci.org/sglumac/HDevs.png)](https://travis-ci.org/sglumac/HDevs)
 
 # HDevs
 Haskell implementation of Discrete Event System Specification
