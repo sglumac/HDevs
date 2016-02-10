@@ -58,5 +58,5 @@ test-suite Test-HDevs
   hs-source-dirs:    test, src
   main-is:           Main.hs
   build-depends:     base, tasty, tasty-quickcheck, tasty-hunit, arrows
-  ghc-options:       -Wall -fhpc
+  ghc-options:       -Wall
   default-language:  Haskell2010
