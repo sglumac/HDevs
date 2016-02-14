@@ -1,3 +1,16 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  HDevs.Simulator
+-- Copyright   :  (c) Slaven Glumac 2016
+-- License     :  BSD-style (see the LICENSE file in the distribution)
+--
+-- Maintainer  :  slaven.glumac@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- Implementation of arrowized DEVS simulator.
+--
+
 module HDevs.Simulator
 ( runSimulator
 , simulator
@@ -13,10 +26,15 @@ import qualified Control.Category
 import Control.Arrow
 
 
+-- | Represention of a simulation progress.
 data Simulator input output =
     Simulator LastEventTime NextEventTime (Model input output)
 
+-- | Building element for streams of events.
+type Message value = (value,Time)
 
+
+-- | Creates a simulator with a given model. 
 simulator :: Model input output -> Simulator input output
 simulator model = Simulator 0 (ta model) model
 
@@ -45,7 +63,8 @@ instance Arrow Simulator where
     first = error "first undefined"
 
 
-runSimulator :: Show input => Time -> Simulator input output -> [Message input] -> [Message output]
+-- | Runs the simulator for a given simulation time on the stream of inputs
+runSimulator :: Time -> Simulator input output -> [Message input] -> [Message output]
 
 runSimulator tMax sim@(Simulator _ tN _) msgs@((x,t):msgs')
     | tN > tMax && t > tMax = []
@@ -91,7 +110,7 @@ internal (Simulator _ tN model) =
             yMsg = lambda model
 
 
-external :: Show input => Simulator input output -> Message input -> Simulator input output
+external :: Simulator input output -> Message input -> Simulator input output
 external (Simulator tL _ model) (x,t) =
     Simulator tL' tN' model'
         where

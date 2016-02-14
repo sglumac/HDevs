@@ -7,6 +7,7 @@ module Test.Utility
 where
 
 import HDevs.Atomic
+import HDevs.Simulator
 
 import Test.Tasty.HUnit
 
