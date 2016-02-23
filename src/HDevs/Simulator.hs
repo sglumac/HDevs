@@ -21,13 +21,12 @@ module HDevs.Simulator
 , lift
 , first
 , (***)
-, (>>>)
-, (<<<)
 ) where
 
 import HDevs.Atomic
 
-import qualified Control.Category
+import Control.Category
+import Prelude hiding ((.),id)
 import Data.These
 
 
@@ -55,20 +54,12 @@ instance Control.Category.Category Simulator where
 
     id = lift id
 
-    (.) = (<<<)            
+    (Simulator tL2 tN2 model2) . (Simulator tL1 tN1 model1) =
+        Simulator tL tN model where
+            tL = max tL1 tL2
+            tN = min tN1 tN2
 
-
-(>>>) :: Simulator input signal -> Simulator signal output -> Simulator input output
-(>>>) = flip (<<<)
-
-
-(<<<) :: Simulator signal output -> Simulator input signal -> Simulator input output
-(Simulator tL2 tN2 model2) <<< (Simulator tL1 tN1 model1) =
-    Simulator tL tN model where
-        tL = max tL1 tL2
-        tN = min tN1 tN2
-
-        model = compose model1 tL1 tN1 model2 tL2 tN2
+            model = compose model1 tL1 tN1 model2 tL2 tN2
 
 
 lift :: (input -> output) -> Simulator input output

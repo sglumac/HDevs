@@ -1,8 +1,8 @@
 module Test.ArrowLaws (arrowLaws) where
 
 import HDevs
-import qualified Control.Category
 
+import Prelude hiding ((.),id)
 import Test.Utility
 
 import Test.Tasty
@@ -13,7 +13,7 @@ categoryIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
     where
         msgs = zip values [1.0..]
         tMax = maxTime msgs
-        ys = runSimulator tMax Control.Category.id msgs
+        ys = runSimulator tMax id msgs
 
 
 -- arr id = id 

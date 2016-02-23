@@ -7,7 +7,7 @@ module Test.Utility
 where
 
 import HDevs.Atomic
-import HDevs.Simulator
+import HDevs.Simulator hiding (id)
 
 import Test.Tasty.HUnit
 

@@ -172,7 +172,16 @@ compose model1 tL1 tN1 model2 tL2 tN2 = Atomic deltaInt' deltaExt' deltaCon' ta'
             in
                 compose model1' tL1' tN1' model2' tL2' tN2'
 
-        | otherwise = error "this is hard to define since model1 outputs something and immediately changes model2"
+        | otherwise =
+            let
+                model1' = deltaExt model1 (tN1 - tL1) x
+                tL1' = tN1
+                tN1' = tN1 + ta model1
+                model2' = deltaInt model2
+                tL2' = tN2
+                tN2' = tN2 + ta model2'
+            in
+                compose model1' tL1' tN1' model2' tL2' tN2'
 
 
     ta' = min (tN1 - tL) (tN2 - tL)
