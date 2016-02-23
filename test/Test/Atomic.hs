@@ -1,6 +1,7 @@
 module Test.Atomic where
 
 import HDevs.Atomic
+import HDevs.Models
 
 import Test.Tasty
 import Test.Tasty.HUnit

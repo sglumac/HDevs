@@ -24,6 +24,8 @@ module HDevs.Simulator
 ) where
 
 import HDevs.Atomic
+import HDevs.Models
+import HDevs.Composition
 
 import Control.Category
 import Prelude hiding ((.),id)
@@ -79,9 +81,8 @@ lift = simulator . static
         model = parallel model1 tL1 tN1 model2 tL2 tN2
 
 
-
 first :: Simulator input output -> Simulator (These input signal) (These output signal)
-first simulator = simulator *** Control.Category.id
+first sim = sim *** Control.Category.id
 
 
 -- | Runs the simulator for a given simulation time on the stream of inputs
