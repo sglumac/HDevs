@@ -22,7 +22,7 @@ arrowIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
     where
         msgs = zip values [1.0..]
         tMax = maxTime msgs
-        ys = runSimulator tMax (arr id) msgs
+        ys = runSimulator tMax (lift id) msgs
 
 
 -- arr (h . g)  =  arr g >>> arr h
@@ -32,8 +32,8 @@ arrowDistributiveTest k1 k2 values = messagesApproxEqual 1e-6 1e-6 xs ys
         msgs = zip values [1.0..]
         h = (k1*)
         g = (k2*)
-        sim = arr g >>> arr h
-        sim' = arr (h . g)
+        sim = lift g >>> lift h
+        sim' = lift (h . g)
         tMax = maxTime msgs
         xs = runSimulator tMax sim msgs
         ys = runSimulator tMax sim' msgs
