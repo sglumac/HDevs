@@ -19,6 +19,7 @@ module HDevs.Simulator
 , Simulator
 , module Control.Category
 , lift
+, module Data.These
 , first
 , (***)
 ) where
@@ -52,7 +53,7 @@ simulator model = Simulator 0 (ta model) model
 --
 -- composition = model1 >>> model2 = compose model1 model2 = model2 . model1
 --
-instance Control.Category.Category Simulator where
+instance Category Simulator where
 
     id = lift id
 
@@ -82,7 +83,7 @@ lift = simulator . static
 
 
 first :: Simulator input output -> Simulator (These input signal) (These output signal)
-first sim = sim *** Control.Category.id
+first sim = sim *** id
 
 
 -- | Runs the simulator for a given simulation time on the stream of inputs

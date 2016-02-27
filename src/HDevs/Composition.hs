@@ -123,7 +123,7 @@ parallel model1 tL1 tN1 model2 tL2 tN2 = Atomic deltaInt' deltaExt' deltaCon' ta
             let
                 model1' = deltaInt model1
                 tL1' = tN1
-                tN1' = tN1 + ta model1
+                tN1' = tN1 + ta model1'
                 model2' = deltaInt model2
                 tL2' = tN1
                 tN2' = tN1 + ta model2'
@@ -148,18 +148,18 @@ parallel model1 tL1 tN1 model2 tL2 tN2 = Atomic deltaInt' deltaExt' deltaCon' ta
         where
             model2' = deltaExt model2 e2 x2
             e2 = if tL2 > tL1 then e else e + (tL1 - tL2)
-            tL2' = tL + e2
+            tL2' = tL2 + e2
             tN2' = tL2' + ta model2'
     deltaExt' e (These x1 x2) = parallel model1' tL1' tN1' model2' tL2' tN2'
         where
             model1' = deltaExt model1 e1 x1
             e1 = if tL1 > tL2 then e else e + (tL2 - tL1)
-            tL1' = tL + e1
+            tL1' = tL1 + e1
             tN1' = tL1' + ta model1'
             model2' = deltaExt model2 e2 x2
             e2 = if tL2 > tL1 then e else e + (tL1 - tL2)
-            tL2' = tL + e2
-            tN2' = tL2' + ta model2'
+            tL2' = tL2 + e2
+            tN2' =  tL2' + ta model2'
 
     deltaCon' (This x1)
         | tN1 < tN2 =

@@ -9,7 +9,7 @@ import Test.Tasty
 import Test.Tasty.QuickCheck (testProperty)
 
 categoryIdentity :: [Double] -> Bool
-categoryIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
+categoryIdentity values = messageStreamsEqual 1e-6 msgs ys
     where
         msgs = zip values [1.0..]
         tMax = maxTime msgs
@@ -18,7 +18,7 @@ categoryIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
 
 -- arr id = id 
 arrowIdentity :: [Double] -> Bool
-arrowIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
+arrowIdentity values = messageStreamsEqual 1e-6 msgs ys
     where
         msgs = zip values [1.0..]
         tMax = maxTime msgs
@@ -27,7 +27,7 @@ arrowIdentity values = messagesApproxEqual 1e-6 1e-6 msgs ys
 
 -- arr (h . g)  =  arr g >>> arr h
 arrowDistributiveTest :: Double -> Double -> [Double] -> Bool
-arrowDistributiveTest k1 k2 values = messagesApproxEqual 1e-6 1e-6 xs ys
+arrowDistributiveTest k1 k2 values = messageStreamsEqual 1e-6 xs ys
     where
         msgs = zip values [1.0..]
         h = (k1*)

@@ -8,30 +8,46 @@ import Test.Utility
 import HDevs.Simulator
 
 simpleGain :: Assertion
-simpleGain = assertMessagesApproxEqual 0.1 0.1 ys [(20.0,1.0),(24.0,2.0)]
+simpleGain = assertMessageStreamsEqual 0.1 ys ys'
     where
-        sim :: Simulator Double Double
-        sim = lift (4.0*)
-        ys = runSimulator 10.0 sim [(5.0,1.0),(6.0,2.0)]
+        sim :: Simulator Int Int
+        sim = lift (4*)
+        ys = runSimulator 10.0 sim [(5,1.0),(6,2.0)]
+        ys' = [(20,1.0),(24,2.0)]
 
 connectedGains :: Assertion 
-connectedGains = assertMessagesApproxEqual 0.1 0.1 ys [(60.0,1.0)]
+connectedGains = assertMessageStreamsEqual 1e-6 ys ys'
     where
-        sim :: Simulator Double Double
-        sim = lift (3.0*) >>> lift (4.0*)
-        ys = runSimulator 10.0 sim [(5.0,1.0)]
+        sim :: Simulator Int Int
+        sim = lift (3*) >>> lift (4*)
+        ys = runSimulator 10.0 sim [(5,1.0)]
+        ys' = [(60,1.0)]
 
 connectedGains' :: Assertion
-connectedGains' = assertMessagesApproxEqual 0.1 0.1 ys [(375.496597,1.0),(173.344997,2.0)]
+connectedGains' = assertMessageStreamsEqual 1e-6 ys ys'
     where
-        sim :: Simulator Double Double
-        sim = lift (3.01*) >>> lift (16.79*)
-        ys = runSimulator 10.0 sim [(7.43,1.0),(3.43,2.0)]
+        sim :: Simulator Int Int
+        sim = lift (3*) >>> lift (16*)
+        ys = runSimulator 10.0 sim [(7,1.0),(3,2.0)]
+        ys' = [(336,1.0),(144,2.0)]
+
+
+type ParallelInt = These Int Int
+
+parallelGains :: Assertion
+parallelGains = assertMessageStreamsEqual 1e-6 ys ys'
+    where
+        sim :: Simulator  ParallelInt ParallelInt
+        sim = lift (3*) *** lift (4*)
+        xs = [(This 1,1.0),(That 2,2.0),(These 3 4,3.0)]
+        ys = runSimulator 10.0 sim xs
+        ys' = [(This 3,1.0),(That 8,2.0),(These 9 16,3.0)]
 
 
 simulatorTests :: TestTree
 simulatorTests = testGroup "Simulator Tests"
     [ testCase "Check if a simple gain amplifies the input" simpleGain
     , testCase "Check if connected gains amplify the input" connectedGains
-    , testCase "Check if connected gains amplify the input" connectedGains' ]
+    , testCase "Check if connected gains amplify the input" connectedGains'
+    , testCase "Check if parallel gains affect their corresponding inputs" parallelGains ]
 
