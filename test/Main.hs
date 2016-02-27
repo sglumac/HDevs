@@ -15,3 +15,4 @@ suite = testGroup "Tests HDevs"
 
 main :: IO ()
 main = defaultMain suite
+

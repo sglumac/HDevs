@@ -51,6 +51,13 @@ parallelGains = assertMessageStreamsEqual 1e-6 ys ys'
         ys = runSimulator 10.0 sim xs
         ys' = [(This 3,1.0),(That 8,2.0),(These 9 16,3.0)]
 
+confluentTransition :: Assertion
+confluentTransition = assertMessageStreamsEqual 1e-6 ys ys'
+    where
+        sim :: Simulator Int Int
+        sim = lift (4*)
+        ys = runSimulator 10.0 sim [(5,1.0),(6,1.0)]
+        ys' = [(20,1.0),(24,1.0)]
 
 simulatorTests :: TestTree
 simulatorTests = testGroup "Simulator Tests"
@@ -58,5 +65,6 @@ simulatorTests = testGroup "Simulator Tests"
     , testCase "Check if connected gains amplify the input" connectedGains
     , testCase "Check if connected gains amplify the input" connectedGains'
     , testCase "Check if parallel gains affect their corresponding inputs" parallelGains
-    , testCase "Check if simulation will properly given short simulation time" simulationToShort ]
+    , testCase "Check if simulation will properly given short simulation time" simulationToShort
+    , testCase "Check if simultaneous events are handled properly with confluent transitions" confluentTransition ]
 

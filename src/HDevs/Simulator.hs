@@ -102,7 +102,7 @@ runSimulator tMax sim@(Simulator _ tN _) msgs@((x,t):msgs')
     | tN <= tMax && tN == t =
         let
             (yMsg,sim') = confluent sim x
-            yMsgs = runSimulator tMax sim' msgs
+            yMsgs = runSimulator tMax sim' msgs'
         in
             case yMsg of
                 Nothing -> yMsgs
