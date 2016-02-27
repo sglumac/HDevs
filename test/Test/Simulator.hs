@@ -32,6 +32,14 @@ connectedGains' = assertMessageStreamsEqual 1e-6 ys ys'
         ys' = [(336,1.0),(144,2.0)]
 
 
+simulationToShort :: Assertion
+simulationToShort = assertMessageStreamsEqual 1e-6 ys ys'
+    where
+        sim :: Simulator Int Int
+        sim = lift (4*)
+        ys = runSimulator 0.1 sim [(5,1.0),(6,2.0)]
+        ys' = []
+
 type ParallelInt = These Int Int
 
 parallelGains :: Assertion
@@ -49,5 +57,6 @@ simulatorTests = testGroup "Simulator Tests"
     [ testCase "Check if a simple gain amplifies the input" simpleGain
     , testCase "Check if connected gains amplify the input" connectedGains
     , testCase "Check if connected gains amplify the input" connectedGains'
-    , testCase "Check if parallel gains affect their corresponding inputs" parallelGains ]
+    , testCase "Check if parallel gains affect their corresponding inputs" parallelGains
+    , testCase "Check if simulation will properly given short simulation time" simulationToShort ]
 
