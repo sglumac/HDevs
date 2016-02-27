@@ -284,3 +284,12 @@ parallel model1 tL1 tN1 model2 tL2 tN2 = Atomic deltaInt' deltaExt' deltaCon' ta
             in
                 merge (lambda model1) (lambda model2)
 
+
+feedback :: Model (These input signal) (These output signal) -> Model input output
+feedback model = Atomic deltaInt' deltaExt' deltaCon' ta' lambda' where
+    deltaInt' = undefined
+    deltaExt' = undefined
+    deltaCon' = undefined
+    ta' = undefined
+    lambda' = undefined
+

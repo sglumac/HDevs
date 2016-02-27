@@ -30,6 +30,27 @@ accumulator f g s0 = wait where
     transition' x = hold 0 (next x) transition transition' (g s0)
 
 
+-- |
+-- Atomic DEVS model which accumulates inputs in a state.
+-- This accumulator is dynamic since it takes in the elapsed time in the
+-- previous state. It is useful for building dynamic models, e.g. integrators.
+dynamicAccumulator ::
+    (input -> ElapsedTime -> state -> state) -> (state -> output) ->
+    state -> Model input output
+
+dynamicAccumulator f g s0 = wait where
+
+    wait = passive transition
+
+    transition e x =
+        let
+            s = f x e s0
+            y = g s
+            next = dynamicAccumulator f g s
+        in
+            hold 0 next transition (transition 0) y
+
+
 -- | Atomic model which waits forever for an external input.
 passive :: ExternalTransition input output -> Model input output
 
@@ -47,4 +68,11 @@ hold ::
 
 hold t next transition confluent out = Atomic next transition confluent t (Just out)
 
+
+-- | Simple integrator using Euler integration (assumes step sequence as a signal)
+integrator :: Double -> Model Double Double
+
+integrator s0 = dynamicAccumulator euler fst (s0,0)
+    where
+        euler x e (s,ts) = (s + x * e, ts + e)
 

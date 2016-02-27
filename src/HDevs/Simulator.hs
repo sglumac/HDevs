@@ -86,6 +86,10 @@ first :: Simulator input output -> Simulator (These input signal) (These output 
 first sim = sim *** id
 
 
+loop :: Simulator (These input signal) (These output signal) -> Simulator input output
+loop (Simulator tL tN model) = Simulator tL tN (feedback model)
+
+
 -- | Runs the simulator for a given simulation time on the stream of inputs
 runSimulator :: Time -> Simulator input output -> [Message input] -> [Message output]
 
