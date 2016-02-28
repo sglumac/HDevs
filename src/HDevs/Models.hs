@@ -76,3 +76,20 @@ integrator s0 = dynamicAccumulator euler fst (s0,0)
     where
         euler x e (s,ts) = (s + x * e, ts + e)
 
+
+-- | Proportional time delay model.
+pt1 :: Double -> Time -> Double -> Model Double Double
+pt1 gain timeConstant s0 = dynamicAccumulator calculation fst (s0,0)
+    where
+        calculation x e (s,ts) =
+            let
+                s' = timeConstant * s / (timeConstant + e) + e * gain * x / (timeConstant + e)
+                ts' = ts + e
+            in
+                (s',ts')
+
+
+-- | Counts the number of events.
+count :: Model input Int
+count = accumulator (\_ counter -> counter +1) id 0
+
