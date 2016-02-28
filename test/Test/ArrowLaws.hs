@@ -8,7 +8,7 @@ import Test.Utility
 import Test.Tasty
 import Test.Tasty.QuickCheck (testProperty)
 
-categoryIdentity :: [Double] -> Bool
+categoryIdentity :: [Int] -> Bool
 categoryIdentity values = messageStreamsEqual 1e-6 msgs ys
     where
         msgs = zip values [1.0..]
@@ -17,7 +17,7 @@ categoryIdentity values = messageStreamsEqual 1e-6 msgs ys
 
 
 -- arr id = id 
-arrowIdentity :: [Double] -> Bool
+arrowIdentity :: [Int] -> Bool
 arrowIdentity values = messageStreamsEqual 1e-6 msgs ys
     where
         msgs = zip values [1.0..]
@@ -26,7 +26,7 @@ arrowIdentity values = messageStreamsEqual 1e-6 msgs ys
 
 
 -- arr (h . g)  =  arr g >>> arr h
-arrowDistributiveTest :: Double -> Double -> [Double] -> Bool
+arrowDistributiveTest :: Int -> Int -> [Int] -> Bool
 arrowDistributiveTest k1 k2 values = messageStreamsEqual 1e-6 xs ys
     where
         msgs = zip values [1.0..]
