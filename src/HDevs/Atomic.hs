@@ -13,6 +13,8 @@
 
 module HDevs.Atomic where
 
+import HDevs.MessageStream
+
 -- | Basic DEVS model 
 data Model input output
     = Atomic
@@ -27,9 +29,6 @@ data Model input output
 type ExternalTransition input output = ElapsedTime -> input -> Model input output
 -- | Model function used for resolving the simultaneous occurence of an external and an internal event.
 type ConfluentTransition input output = input -> Model input output
-
--- | Time definition.
-type Time = Double
 
 -- | Elapsed time since the last event.
 type ElapsedTime    = Time

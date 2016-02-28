@@ -5,7 +5,7 @@ import Test.Tasty.HUnit
 
 import Test.Utility
 
-import HDevs.Simulator
+import HDevs
 
 simpleGain :: Assertion
 simpleGain = assertMessageStreamsEqual 0.1 ys ys'
@@ -69,6 +69,7 @@ confluentTransition = assertMessageStreamsEqual 1e-6 ys ys'
         sim = lift (4*)
         ys = runSimulator 10.0 sim [(5,1.0),(6,1.0)]
         ys' = [(20,1.0),(24,1.0)]
+
 
 simulatorTests :: TestTree
 simulatorTests = testGroup "Simulator Tests"

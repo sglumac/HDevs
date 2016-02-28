@@ -27,6 +27,7 @@ module HDevs.Simulator
 import HDevs.Atomic
 import HDevs.Models
 import HDevs.Composition
+import HDevs.MessageStream
 
 import Control.Category
 import Prelude hiding ((.),id)
@@ -36,9 +37,6 @@ import Data.These
 -- | Represention of a simulation progress.
 data Simulator input output =
     Simulator LastEventTime NextEventTime (Model input output)
-
--- | Building element for streams of events.
-type Message value = (value,Time)
 
 
 -- | Creates a simulator with a given model. 
@@ -91,7 +89,7 @@ loop (Simulator tL tN model) = Simulator tL tN (feedback model)
 
 
 -- | Runs the simulator for a given simulation time on the stream of inputs
-runSimulator :: Time -> Simulator input output -> [Message input] -> [Message output]
+runSimulator :: Time -> Simulator input output -> MessageStream input -> MessageStream output
 
 runSimulator tMax sim@(Simulator _ tN _) msgs@((x,t):msgs')
     | tN > tMax && t > tMax = []

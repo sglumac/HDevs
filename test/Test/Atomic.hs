@@ -44,6 +44,7 @@ correctOutputPt1 = assertBool msg $ correct (lambda pt1')
         msg = "The result was " ++ show (lambda pt1') ++ " instead of (Just 12)"
 
 
+
 atomicTests :: TestTree
 atomicTests = testGroup "Atomic Tests"
     [ testCase "Gain model should wait forever" foreverWait

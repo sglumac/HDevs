@@ -13,9 +13,11 @@
 
 module HDevs
 ( module HDevs.Atomic
-, module HDevs.Simulator )
+, module HDevs.Simulator
+, module HDevs.MessageStream )
 where
 
 import HDevs.Atomic
 import HDevs.Simulator
+import HDevs.MessageStream
 

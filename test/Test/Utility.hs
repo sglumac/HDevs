@@ -6,8 +6,9 @@ module Test.Utility
 , maxTime )
 where
 
-import HDevs.Atomic
-import HDevs.Simulator hiding (id)
+import HDevs
+
+import Prelude hiding (id)
 
 import Test.Tasty.HUnit
 

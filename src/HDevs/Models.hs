@@ -1,5 +1,6 @@
 module HDevs.Models where
 
+import HDevs.MessageStream
 import HDevs.Atomic
 
 -- | Lift a static function to the atomic DEVS model.
